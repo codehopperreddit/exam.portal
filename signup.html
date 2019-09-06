@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Signup for Students</title>
+        <script>
+            function submitforms()
+            {
+                var form1=document.newuser;
+                if(form1.username.value==""||form1.password.value==""||form1.name.value=="")
+                {
+                    
+                    alert("Data is Missing fill up all fields");
+                    
+                    return false;
+                    
+                }
+                else
+                {
+                
+                    if(form1.password.value.length<8)
+                    {
+                        alert("Password is too small");
+                    
+                        return false;
+                    }
+                    else if(form1.password.value!=form1.cpassword.value)
+                    {
+                        alert("Password does not match");
+                    
+                        return false;
+                    }
+                    else
+                    {
+                    document.forms.fullquestion.submit();
+                    return true;
+                    }
+                
+                }
+            }
+           
+
+        </script>
+    </head> 
+    <body>
+        <form name="newuser" method="POST" action="createnewuser.jsp">
+                <p>username<input type="text" name="username"></p>
+                
+                <p>Full Name<input type="text" name="name"></p>
+                <p>Password:<input type="password" name="password"></p>
+                <p>confirmpassword:<input type="password" name="cpassword"></p>
+                
+                
+                <button onclick="return submitforms()">Submit</button>
+                <button onclick="Cancel()">Clear All</button>
+        </form>        
+        <%
+
+
+         %>
+
+    </body>  
+</html>

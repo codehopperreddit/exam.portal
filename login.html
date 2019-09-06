@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Login Page</title>
+        <script>
+            function submitforms()
+            {
+                var form1=document.loginform;
+                if(form1.username.value==""||form1.password.value==""||form1.usertype.value=="")
+                {
+                    
+                    alert("Data is Missing fill up all fields");
+                    
+                    return false;
+                    
+                }
+                else
+                {
+                
+                    if(form1.password.value.length<8)
+                    {
+                        alert("Password is too small");
+                    
+                        return false;
+                    }
+                    else
+                    {
+                    document.forms.fullquestion.submit();
+                    return true;
+                    }
+                
+                }
+            }
+
+        </script>
+    </head> 
+    <body>
+       <form name="loginform" action="logincheck.php" method="POST">
+           <p>Username:<input type="text" name="username" maxlength="50"></input></p>
+           <p>Password:<input type="password" name="password" maxlength="50"></input></p>
+           <p>I am a:</p><br>
+           <input type="radio" name="usertype" value="tester">Instructor</input>
+           <input type="radio" name="usertype" value="testee">Student</input><br>
+           <input type="button" value="Submit" onclick="return submitforms()"></input>
+        </form>    
+
+    </body>  
+</html>
