@@ -1,3 +1,16 @@
+<?php
+    session_start();
+    if($_SESSION['usertype']=="tester") //instrutor
+    {
+        if (!isset($_SESSION['loggedin'])) 
+        {
+            header('Location: index.php');
+            exit();
+        }
+
+    }
+   
+?>
 <html>
 <head>
 
@@ -10,9 +23,7 @@
             Take the selected answer from the previous page and save it along with the same question number and
             question in a separate table
         */
-        $dbhost = 'localhost:3306';
-        $dbuser = 'admin';
-        $dbpass = 'securepassword';
+        include 'dbinfo.php';
         
         $conn = mysqli_connect($dbhost, $dbuser, $dbpass);
         
@@ -50,5 +61,11 @@
 	
 		
     ?>
+    <a href="instructorportal.php">Enter another question</a>  <br>
+    
+    <a href="instructoraccountcreator/signup.html">Create new account</a> <br>
+
+    <a href="logout.php">Log Out</a> <br>
+
     </body>
 </html> 

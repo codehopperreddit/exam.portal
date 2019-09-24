@@ -25,7 +25,7 @@
                     }
                     else
                     {
-                    document.forms.fullquestion.submit();
+                    document.forms.loginform.submit();
                     return true;
                     }
                 
@@ -41,8 +41,9 @@
            <p>I am a:</p><br>
            <input type="radio" name="usertype" value="tester">Instructor</input>
            <input type="radio" name="usertype" value="testee">Student</input><br>
-           <input type="button" value="Submit" onclick="return submitforms()"></input>
+           <button onclick="return submitforms()">Submit</button>
         </form>    
-
+        <a>
+            <a href="signup.html">Sign up</a>  
     </body>  
 </html>

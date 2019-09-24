@@ -1,4 +1,24 @@
-<!doctype html>
+
+<?php
+    session_start();
+    if($_SESSION['usertype']=="tester") //instrutor
+    {
+        if (!isset($_SESSION['loggedin'])) 
+        {
+            header('Location: index.php');
+            exit();
+        }
+
+    }
+    elseif($_SESSION['usertype']=="testee")//student
+    {
+        header('Location: '.$uri.'/exam.portal/studentportal.php');
+    }
+    else
+    {
+        header('Location: '.$uri.'/exam.portal/logout.php');
+    }
+?>
 <html>
     <head>
         <title>Page to input questions and answers into two dB</title>
@@ -39,6 +59,7 @@
         
     </head>
     <body>
+    
         
             <form name="fullquestion" action="chooseanswer.php" method="POST">
                 <p>Question<input type="text" name="question"></p>
@@ -51,8 +72,10 @@
                 <button onclick="return submitforms()">Submit</button>
                 <button onclick="Cancel()">Clear All</button>
             </form>
+
+            <br>
             
-            
+            <a href="instructoraccountcreator/signup.html">Create new account</a> <br>
         
         
             

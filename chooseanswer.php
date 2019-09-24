@@ -1,3 +1,16 @@
+<?php
+    session_start();
+    if($_SESSION['usertype']=="tester") //instrutor
+    {
+        if (!isset($_SESSION['loggedin'])) 
+        {
+            header('Location: index.php');
+            exit();
+        }
+
+    }
+   
+?>
 <html>
 <head>
 
@@ -25,10 +38,7 @@
             We take the Last question number from the table and increment the question number by 1.
             Then we insert the question and answers entered in the previous page with the new question number into the table
         */
-        $dbhost = 'localhost:3306';
-        $dbuser = 'admin';
-        $dbpass = 'securepassword';
-        
+        include 'dbinfo.php';
         $conn = mysqli_connect($dbhost, $dbuser, $dbpass);
         
         if(! $conn ) 
@@ -67,10 +77,10 @@
 		
 	?>
 	<form name="getcorrectanswer" action="correctanswer.php" method="POST">
-		<input type="radio" name="correctanswer" value=<?php echo $_POST["option1"]; ?> ><?php echo $_POST["option1"]; ?></input><br>
-		<input type="radio" name="correctanswer" value=<?php echo $_POST["option2"]; ?> ><?php echo $_POST["option2"]; ?></input><br>
-		<input type="radio" name="correctanswer" value=<?php echo $_POST["option3"]; ?> ><?php echo $_POST["option3"]; ?></input><br>
-		<input type="radio" name="correctanswer" value=<?php echo $_POST["option4"]; ?> ><?php echo $_POST["option4"]; ?></input><br>
+		<input type="radio" name="correctanswer" value="<?php echo $_POST["option1"]; ?>" ><?php echo $_POST["option1"]; ?></input><br>
+		<input type="radio" name="correctanswer" value="<?php echo $_POST["option2"]; ?>" ><?php echo $_POST["option2"]; ?></input><br>
+		<input type="radio" name="correctanswer" value="<?php echo $_POST["option3"]; ?>" ><?php echo $_POST["option3"]; ?></input><br>
+		<input type="radio" name="correctanswer" value="<?php echo $_POST["option4"]; ?>" ><?php echo $_POST["option4"]; ?></input><br>
 		<input type="button" value="Submit" onclick="submitforms()"></input>
 	</form>
 </body>

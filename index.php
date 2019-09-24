@@ -1,4 +1,13 @@
-<!doctype html>
+<?php
+    session_start();
+    if (isset($_SESSION['loggedin']))
+    {
+        header('Location: '.$uri.'/exam.portal/usertype.php');
+
+    }
+    
+    
+?>
 <html>
     <head>
         <title>Page to input questions and answers into two dB</title>
@@ -16,9 +25,13 @@
         
     </head>
     <body>
-         <a href="instructorportal.html">Instructor portal (Input Questions)</a><br><br>
-            
-         <a href="studentportal.html">Student Portal (Take Test)</a>            
+              
+         
+         <a href="signup.html">Sign up</a>         
+
+         <a href="login.html">Log in</a>         
+
+
         
         
             
