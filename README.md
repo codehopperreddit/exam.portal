@@ -4,7 +4,10 @@ An app to take exams running on Apache and based on PHP
 >Presently only way to create new instructor accounts is to already have an instructor account.(or remove the top most part marked in /instructoraccountcreator/createnewuser.php)
 
 To Do:  
->Give the actual exam.  
+>Add protection to prevent jumping around  pages especially as student
+>add a time limit  
+>Go back and change answers
+
 >UI
 
 How to run in Xampp:  

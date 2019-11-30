@@ -10,6 +10,12 @@
     </head>
     <body>
     <?php
+        session_start();
+        
+        $id=$_SESSION['id']; //Each student account has a unique id
+            
+
+
         include 'dbinfo.php';
         $conn = mysqli_connect($dbhost, $dbuser, $dbpass);
         
@@ -17,81 +23,139 @@
         {
            die('Could not connect: ' . mysqli_error($conn)); 
         }
-        
-        //$sql = 'SELECT * FROM mainquestions ORDER BY RAND() LIMIT 1';
-        //instead of this we should generate a random view for each user and serve that : studentview username varchar , viewname varchar
-        //will allow to resume function
-        //put a button called "start test" here 
-        
-        //Instead of that we can generate a rand sequence of qn and store in a variable and pass via sessions
-        //$sql = 'SELECT qn FROM mainquestions ORDER BY RAND()';
-        
-        //mysqli_select_db($conn,'examportal');
-        //$retval = mysqli_query($conn,$sql);//gets a random question
-        //$row = mysqli_fetch_array($retval, MYSQLI_ASSOC);
-        //$qn = $row['qn'];//need to put a check for if this qn has been retrieved before
-        //studentanswers: username(varchar),(column name should be qn store 1,2,3,4 acc to answer)
-        //ALTER TABLE studentanswers ADD ? int(10);
-        //i,qn
-        //but creating everytime for each user will be problamatic, so creation of columns to be done while inputing questions
-
-        //version 1
         mysqli_select_db($conn,'examportal');
         
-        /*
-        $sql = 'SELECT qn FROM mainquestions ORDER BY qn DESC LIMIT 1'; // first we find the last qn to know the size of 
-        //the array needed
-        $retval = mysqli_query($conn,$sql);
-        if(! $retval ) 
+        //Now we need to check if the student is a returning one or a new one starting the exam
+
+        if ($sql = $conn->prepare('SELECT count FROM studentaccounts WHERE id = ?')) 
         {
-           die('Could not get data: ' . mysqli_error($conn));
+            
+            $sql->bind_param('i', $id);
+            $sql->execute();
+        
+            $sql->store_result();
         }
-        $row = mysqli_fetch_array($retval, MYSQLI_ASSOC);
-        $lastqn = $row['qn']; //Now we know the last question number and the number of questions
-        */
-        //funtionality of the above code replaced by "count" 
+        else
+        {
+            echo 'bind error in studentacc';
+        }
+        if ($sql->num_rows > 0) 
+        {
+            $sql->bind_result($count);
+             $sql->fetch();
+         }
        
-        $sql= 'SELECT qn FROM mainquestions ORDER BY RAND()';//fetches in random order
+       
+      if($count==0) //if count is null then the student hasn't answered anything and its safe to start
+       {
+        
+            $sql= 'SELECT qn FROM mainquestions ORDER BY RAND()';//fetches in random order
 
-        //https://www.w3schools.com/php/php_ref_array.asp
-        //https://www.w3schools.com/php/func_array_push.asp
-        //https://www.w3schools.com/php/php_arrays.aspg  
+         
 
-        //$sql ='SELECT qn FROM  mainquestions  ORDER BY RAND()';
+       
 
         
-        //now we store the sequence in a array
-        $retval = mysqli_query($conn,$sql);
-        if(! $retval ) 
-        {
-           die('Could not get data: ' . mysqli_error($conn));
-        }
-        $qnseq=array();
-        if (mysqli_num_rows($retval) > 0) 
-        { 
-             
-            while ($row = mysqli_fetch_array($retval)) 
+            //now we store the sequence in a array
+            $retval = mysqli_query($conn,$sql);
+            if(! $retval ) 
+            {
+                die('Could not get data: ' . mysqli_error($conn));
+            }
+            $qnseq=array();
+            if (mysqli_num_rows($retval) > 0) 
             { 
+             
+                while ($row = mysqli_fetch_array($retval)) 
+                { 
                 
-                array_push($qnseq,$row['qn']);
+                    array_push($qnseq,$row['qn']);
                 
-            } 
+                } 
                                             //This should create an array of qn in random order
-            mysqli_free_res($retval); 
-        }  
-        else { 
-            echo "No matching records are found."; 
-        } 
+                mysqli_free_result($retval); 
+            }  
+            else 
+            { 
+                 echo "No matching records are found."; 
+            } 
         
-         session_start();
-         $_SESSION['count']=0; //keep track of the present question
-         $_SESSION['qnseq']=$qnseq;//this is a array that has all the questions in a random order
-         $_SESSION['numqn']=count($qnseq);//this is the number of questions
+            $ansseq=array();//array to store the answers 
+         
+         
+            $_SESSION['count']=0; //keep track of the present question
+            $_SESSION['qnseq']=$qnseq;//this is a array that has all the questions in a random order
+            $_SESSION['ansseq']=$ansseq;
+            $_SESSION['numqn']=count($qnseq);//this is the number of questions
         
+            //now we need to store qnseq into the db for retrieval in case of disconnection
+
+            $serializedqnseq=serialize($qnseq);
+            
+            if ($sql = $conn->prepare('UPDATE studentaccounts SET qnseq = ? WHERE id = ?')) 
+            {
+            
+                $sql->bind_param('si',$serializedqnseq,$id);
+                $sql->execute();
         
-        mysqli_close($conn);
+                
+            }
+            else
+            {
+                echo 'bind error in studentacc';
+            }
+
+            mysqli_close($conn);
 	
-        header('Location: '.$uri.'/exam.portal/question.php'); 
+            header('Location: '.$uri.'/exam.portal/question.php'); //Remove this after implementation of a timer 
+
+        }
+        else  // Here we handle the case where the student has started already
+        {
+            //we need to retrieve the qnseq and ansseq (since count has already being retrieved)
+            if ($sql = $conn->prepare('SELECT qnseq,ansseq FROM studentaccounts WHERE id = ?')) 
+            {
+            
+                $sql->bind_param('i', $id);
+                $sql->execute();
+        
+                $sql->store_result();
+            }
+            else
+            {
+                echo 'bind error in studentacc';
+            }
+            if ($sql->num_rows > 0) 
+            {   
+                $sql->bind_result($qnseq,$ansseq);
+                if($sql->fetch())
+                {
+                    $_SESSION['count']=$count; //keep track of the present question
+                    $_SESSION['qnseq']=unserialize($qnseq);//this is a array that has all the questions in a random order
+                    $_SESSION['ansseq']=unserialize($ansseq);  //The data is serialized before storing
+                    $_SESSION['numqn']=count($qnseq);//this is the number of questions
+
+                }
+                else
+                {
+                    die("error in getting answer"); //replace with something better
+                }
+            }
+            else
+                {
+                    die("No result");
+                }
+            
+
+
+                
+
+
+            mysqli_close($conn);
+	
+            header('Location: '.$uri.'/exam.portal/question.php'); //Remove this after implementation of a timer 
+
+        }
     ?>
     <a href="question.php">Start test</a>   
     <input type="button" value="Start test"></input>

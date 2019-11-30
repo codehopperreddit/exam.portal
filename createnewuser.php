@@ -19,17 +19,21 @@
             echo 'usertype testee';
             $stmt->bind_param('s', $_POST['username']);
             $stmt->execute();
-        
+            $stmt->store_result();
             if ($stmt->num_rows > 0) 
             {
                 header('Location: '.$uri.'/exam.portal/useralreadyexists.html');
             }
+            
+            $stmt->free_result();
         }
-
+       
     $sql = 'SELECT id FROM studentaccounts ORDER BY id DESC LIMIT 1';
         
-        $retval = mysqli_query($conn,$sql);//gets the last id
+        $retval = mysqli_query($conn,$sql)//gets the last id
+        or printf("Error: %s\n", mysqli_error($conn));  //Idelly error should not be displayed to users
         $row = mysqli_fetch_array($retval, MYSQLI_ASSOC);
+        
         
         $newid = $row['id'];
         $newid++;  //creating new id
@@ -41,6 +45,7 @@
                 ];
     $hash=password_hash($password,PASSWORD_BCRYPT, $options);
     $password="password";
+    
     $sql=$conn->prepare('INSERT INTO studentaccounts (id,username,name,password) VALUES (?,?,?,?)');
 
     if($sql !== FALSE) 
